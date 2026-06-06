@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finde den Imposter 👀</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --y:#FFE041;--o:#FF7B2C;--r:#FF3B5C;--g:#2EE87B;--b:#3BAAFF;--p:#C44DFF;
+  --bg:#12091e;--bg2:#1c1030;--bg3:#251840;--card:#1e1230;
+  --t:#ffffff;--t2:#bba8d4;--t3:#6a5585;--brd:rgba(255,255,255,0.07);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;justify-content:center;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 10%,rgba(255,224,65,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(196,77,255,.07) 0%,transparent 50%);pointer-events:none;}
+#app{width:100%;max-width:480px;min-height:100dvh;padding:1.5rem 1.25rem 3rem;position:relative;z-index:1;}
+.screen{display:none;}.screen.active{display:block;}
+
+/* LOGO */
+.logo{text-align:center;margin-bottom:1.8rem;padding-top:.5rem;}
+.logo-emoji{font-size:44px;display:block;margin-bottom:6px;animation:wobble 2.5s ease-in-out infinite;}
+@keyframes wobble{0%,100%{transform:rotate(-6deg) scale(1);}50%{transform:rotate(6deg) scale(1.1);}}
+.logo-title{font-family:'Fredoka One',cursive;font-size:42px;line-height:1;background:linear-gradient(135deg,var(--y) 0%,var(--o) 50%,var(--r) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(255,123,44,.4));letter-spacing:1px;}
+.logo-small .logo-title{font-size:28px;}
+.logo-small .logo-emoji{font-size:28px;margin-bottom:2px;}
+.logo-sub{font-size:11px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-top:4px;font-weight:800;}
+
+/* CARD BOX */
+.cbox{background:var(--card);border:1.5px solid var(--brd);border-radius:20px;padding:1.25rem;margin-bottom:1rem;}
+.slabel{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;}
+
+/* PLAYER INPUT */
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.prow:last-child{margin-bottom:0;}
+.pnum{width:30px;height:30px;border-radius:50%;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#12091e;}
+.n0{background:linear-gradient(135deg,#FFE041,#FF7B2C);}
+.n1{background:linear-gradient(135deg,#FF3B5C,#C44DFF);}
+.n2{background:linear-gradient(135deg,#3BAAFF,#2EE87B);}
+.n3{background:linear-gradient(135deg,#C44DFF,#3BAAFF);}
+.n4{background:linear-gradient(135deg,#2EE87B,#FFE041);}
+.n5{background:linear-gradient(135deg,#FF7B2C,#FF3B5C);}
+.n6{background:linear-gradient(135deg,#FFE041,#C44DFF);}
+.n7{background:linear-gradient(135deg,#3BAAFF,#FF3B5C);}
+.pinput{flex:1;height:42px;padding:0 14px;border:1.5px solid var(--brd);border-radius:14px;background:var(--bg2);color:var(--t);font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .2s;}
+.pinput::placeholder{color:var(--t3);font-weight:600;}
+.pinput:focus{border-color:var(--y);}
+.btnrm{background:rgba(255,59,92,.12);border:1.5px solid rgba(255,59,92,.25);color:var(--r);cursor:pointer;font-size:15px;padding:6px 9px;border-radius:10px;font-weight:900;}
+.btnrm:hover{background:rgba(255,59,92,.25);}
+.btnadd{width:100%;padding:12px;border:2px dashed rgba(255,255,255,.12);border-radius:14px;background:none;color:var(--t3);font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;margin-top:10px;transition:all .2s;}
+.btnadd:hover{border-color:var(--y);color:var(--y);}
+
+/* BUTTONS */
+.btnmain{width:100%;padding:17px;background:linear-gradient(135deg,var(--y),var(--o));color:#12091e;border:none;border-radius:18px;font-size:18px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:1rem;transition:transform .15s,filter .15s;box-shadow:0 4px 24px rgba(255,123,44,.35);letter-spacing:.3px;}
+.btnmain:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btnmain:active{transform:scale(.97);}
+.btnsec{width:100%;padding:14px;background:rgba(255,255,255,.04);color:var(--t2);border:1.5px solid var(--brd);border-radius:18px;font-size:15px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;margin-top:10px;transition:all .15s;}
+.btnsec:hover{background:rgba(255,255,255,.09);color:var(--t);}
+
+/* HIDDEN PASS */
+.cpbar{text-align:center;font-size:15px;color:var(--t2);margin-bottom:1.2rem;font-weight:700;}
+.cpbar strong{color:var(--y);}
+.hcover{background:linear-gradient(145deg,#0a061a,#130b22);border:2px dashed rgba(196,77,255,.35);border-radius:24px;padding:2.5rem 1.75rem;margin-bottom:1.25rem;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;user-select:none;}
+.hcover:active{transform:scale(.98);}
+.hc-q{font-size:60px;margin-bottom:12px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.hc-name{font-family:'Fredoka One',cursive;font-size:34px;color:var(--t);margin-bottom:8px;}
+.hc-hint{font-size:12px;color:var(--p);letter-spacing:2px;text-transform:uppercase;font-weight:800;}
+.passhint{font-size:12px;color:var(--t3);text-align:center;margin-top:10px;font-weight:700;}
+
+/* REVEAL CARD */
+.revcard{border-radius:26px;padding:2.5rem 1.75rem;margin-bottom:1.25rem;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;animation:cardPop .45s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes cardPop{from{transform:scale(.8) rotate(-3deg);opacity:0;}60%{transform:scale(1.04) rotate(.5deg);}to{transform:scale(1) rotate(0);opacity:1;}}
+.revcard-crew{background:linear-gradient(145deg,#0f1f3a,#152848);border:2px solid rgba(59,170,255,.5);box-shadow:0 0 40px rgba(59,170,255,.18);}
+.revcard-imp{background:linear-gradient(145deg,#0a0008,#180020);border:2px solid rgba(196,77,255,.7);box-shadow:0 0 50px rgba(196,77,255,.3);}
+.rev-emoji{font-size:56px;margin-bottom:12px;display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(0) rotate(-20deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+.rev-role{font-size:11px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:1rem;display:inline-block;}
+.role-crew{background:rgba(59,170,255,.18);color:#90cdff;border:1px solid rgba(59,170,255,.35);}
+.role-imp{background:rgba(196,77,255,.2);color:#da9fff;border:1px solid rgba(196,77,255,.45);}
+.rev-word{font-family:'Fredoka One',cursive;font-size:38px;color:var(--t);line-height:1.2;margin-bottom:10px;}
+.rev-sub{font-size:14px;color:var(--t2);line-height:1.6;font-weight:600;}
+
+/* DISCUSS */
+.discuss-box{background:var(--card);border:1.5px solid var(--brd);border-radius:20px;padding:1.25rem;margin-bottom:1rem;text-align:center;}
+.disc-emoji{font-size:40px;margin-bottom:8px;display:block;}
+.disc-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--t);margin-bottom:6px;}
+.disc-sub{font-size:13px;color:var(--t2);font-weight:600;line-height:1.5;}
+.timer{font-family:'Fredoka One',cursive;font-size:52px;color:var(--y);margin:12px 0;text-shadow:0 0 20px rgba(255,224,65,.4);}
+
+/* VOTE */
+.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+.vbtn{background:var(--bg2);border:2px solid var(--brd);border-radius:16px;padding:16px 12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;color:var(--t);transition:all .2s;text-align:center;}
+.vbtn:hover{border-color:var(--r);background:rgba(255,59,92,.1);transform:translateY(-2px);}
+.vbtn:active{transform:scale(.97);}
+.vbtn-emoji{font-size:26px;display:block;margin-bottom:4px;}
+
+/* RESULT */
+.result-banner{border-radius:24px;padding:2rem 1.5rem;margin-bottom:1.25rem;text-align:center;animation:cardPop .5s cubic-bezier(.34,1.56,.64,1) both;}
+.res-win{background:linear-gradient(145deg,#0a2a10,#0d3515);border:2px solid rgba(46,232,123,.5);box-shadow:0 0 40px rgba(46,232,123,.15);}
+.res-lose{background:linear-gradient(145deg,#1a0520,#220a2a);border:2px solid rgba(196,77,255,.6);box-shadow:0 0 40px rgba(196,77,255,.2);}
+.res-emoji{font-size:56px;margin-bottom:10px;display:block;}
+.res-title{font-family:'Fredoka One',cursive;font-size:34px;margin-bottom:6px;}
+.res-title-win{color:var(--g);}
+.res-title-lose{color:var(--p);}
+.res-sub{font-size:14px;color:var(--t2);line-height:1.6;font-weight:600;}
+.reveal-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 14px;}
+.reveal-row span{font-size:13px;color:var(--t2);font-weight:700;}
+.reveal-row strong{color:var(--p);font-size:15px;}
+
+/* PROGRESS */
+.progbar{height:6px;background:var(--bg3);border-radius:4px;margin-bottom:1.4rem;overflow:hidden;}
+.progfill{height:100%;background:linear-gradient(90deg,var(--y),var(--o));border-radius:4px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.pdots{display:flex;justify-content:center;gap:6px;margin-bottom:1.2rem;flex-wrap:wrap;}
+.pdot{height:8px;background:var(--bg3);border-radius:4px;transition:all .35s cubic-bezier(.34,1.56,.64,1);min-width:8px;}
+.pdot.active{background:var(--y);}
+.pdot.done{background:var(--t3);}
+
+/* FOOTER BAR */
+.footer-bar{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;gap:10px;}
+.footer-txt{font-size:11px;color:var(--t3);letter-spacing:2px;font-weight:700;text-transform:uppercase;}
+.footer-btns{display:flex;gap:8px;align-items:center;}
+.btn-imp{background:rgba(180,20,20,.25);border:1.5px solid rgba(200,40,40,.4);color:#ff9090;font-size:12px;font-weight:800;padding:7px 13px;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:.5px;transition:all .2s;}
+.btn-imp:hover{background:rgba(180,20,20,.4);border-color:rgba(200,40,40,.7);}
+.btn-discord{background:#5865F2;border:none;color:#fff;font-size:12px;font-weight:800;padding:7px 13px;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.btn-discord:hover{background:#4752c4;transform:translateY(-1px);}
+.btn-discord svg{width:16px;height:16px;fill:white;flex-shrink:0;}
+
+/* MODAL OVERLAY */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:#1a0a0a;border:1.5px solid rgba(180,30,30,.5);border-radius:16px;width:100%;max-width:440px;overflow:hidden;animation:cardPop .3s cubic-bezier(.34,1.56,.64,1) both;}
+.modal-head{background:linear-gradient(135deg,#2a0808,#1a0505);padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(180,30,30,.3);}
+.modal-head-icon{font-size:28px;}
+.modal-head-info h3{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;margin-bottom:2px;}
+.modal-head-info p{font-size:11px;color:#aa7070;letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+.modal-close{margin-left:auto;background:rgba(255,255,255,.08);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-close:hover{background:rgba(255,59,92,.3);}
+.modal-body{padding:1.25rem;}
+.modal-section-label{font-size:10px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;color:#aa5050;margin-bottom:12px;}
+.modal-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.modal-row:last-child{border-bottom:none;}
+.modal-row-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center;}
+.modal-row-text{font-size:14px;color:#ddd;font-weight:600;}
+.modal-row-text a{color:#90c4ff;text-decoration:none;}
+.modal-row-text a:hover{text-decoration:underline;}
+.modal-warn{background:rgba(255,150,0,.08);border:1px solid rgba(255,150,0,.2);border-radius:10px;padding:12px;margin:14px 0;}
+.modal-warn-title{font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#ffaa44;margin-bottom:8px;}
+.modal-warn-text{font-size:12px;color:#cc9966;line-height:1.5;font-weight:600;}
+.modal-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.modal-tag{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.12);color:#ccc;background:rgba(255,255,255,.06);}
+.modal-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 1.25rem;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2);}
+.modal-footer-txt{font-size:12px;color:#664444;font-weight:700;letter-spacing:1px;}
+
+/* MIN PLAYERS MODAL */
+.minplay-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:1.5rem;}
+.minplay-overlay.open{display:flex;}
+.minplay-modal{background:var(--card);border:2px solid rgba(255,59,92,.5);border-radius:20px;width:100%;max-width:340px;padding:2rem 1.5rem;text-align:center;animation:cardPop .35s cubic-bezier(.34,1.56,.64,1) both;}
+.minplay-emoji{font-size:52px;margin-bottom:12px;display:block;}
+.minplay-title{font-family:'Fredoka One',cursive;font-size:24px;color:var(--r);margin-bottom:8px;}
+.minplay-sub{font-size:14px;color:var(--t2);font-weight:600;line-height:1.6;margin-bottom:1.25rem;}
+.minplay-badges{display:flex;justify-content:center;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.minplay-badge{background:rgba(255,59,92,.12);border:1.5px solid rgba(255,59,92,.3);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:800;color:#ff9090;}
+.minplay-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--y),var(--o));color:#12091e;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;}
+.minplay-btn:active{transform:scale(.97);}
+
+/* WORD CATEGORIES badge on discuss */
+.wcat{display:inline-block;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px;background:rgba(255,224,65,.12);color:#ffe97a;border:1px solid rgba(255,224,65,.25);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SETUP -->
+<div id="s-setup" class="screen active">
+  <div class="logo">
+    <span class="logo-emoji">🕵️</span>
+    <div class="logo-title">Finde den Imposter</div>
+    <div class="logo-sub">das verrückte partyspiel</div>
+  </div>
+  <div class="cbox">
+    <div class="slabel">👥 Wer spielt?</div>
+    <div id="player-list"></div>
+    <button class="btnadd" onclick="addPlayer()">+ Spieler hinzufügen</button>
+  </div>
+  <button class="btnmain" onclick="startRound()">🎮 Spiel starten!</button>
+  <div class="footer-bar">
+    <span class="footer-txt">Made by CanooStudio ✦</span>
+    <div class="footer-btns">
+      <button class="btn-imp" onclick="openImpressum()">Impressum</button>
+      <button class="btn-discord" onclick="window.open('https://discord.gg/tgpknkG8ym','_blank')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.054a19.95 19.95 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.201 13.201 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        Discord
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MIN PLAYERS MODAL -->
+<div class="minplay-overlay" id="minplay-overlay">
+  <div class="minplay-modal">
+    <span class="minplay-emoji">👥</span>
+    <div class="minplay-title">Zu wenig Spieler!</div>
+    <div class="minplay-sub" id="minplay-sub">Du brauchst mindestens <strong style="color:var(--y)">3 Spieler</strong> um das Spiel zu starten!</div>
+    <div class="minplay-badges">
+      <span class="minplay-badge">😅 1 Spieler</span>
+      <span class="minplay-badge">🤝 2 Spieler</span>
+      <span class="minplay-badge" style="background:rgba(46,232,123,.12);border-color:rgba(46,232,123,.3);color:#7ff0ab;">✅ 3+ Spieler</span>
+    </div>
+    <button class="minplay-btn" onclick="document.getElementById('minplay-overlay').classList.remove('open')">👍 Okay, ich füge mehr hinzu!</button>
+  </div>
+</div>
+
+<!-- IMPRESSUM MODAL -->
+<div class="modal-overlay" id="impressum-overlay" onclick="closeImpressum(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <span class="modal-head-icon">🎮</span>
+      <div class="modal-head-info">
+        <h3>CanooStudio</h3>
+        <p>Impressum · Rechtliche Angaben</p>
+      </div>
+      <button class="modal-close" onclick="closeImpressum()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">§ 5 DDG — Angaben</div>
+      <div class="modal-row">
+        <span class="modal-row-icon">👤</span>
+        <span class="modal-row-text">Can Delibasi</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-icon">📍</span>
+        <span class="modal-row-text">Ludgerweg 184, 42119 Wuppertal, Deutschland</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-icon">✉️</span>
+        <span class="modal-row-text"><a href="mailto:canooservice@gmail.com">canooservice@gmail.com</a></span>
+      </div>
+      <div class="modal-warn">
+        <div class="modal-warn-title">⚠ Wichtiger Hinweis</div>
+        <div class="modal-warn-text">Jegliche Art von Belästigung wird zur Anzeige gebracht. Darunter fallen unter anderem:</div>
+        <div class="modal-tags">
+          <span class="modal-tag">📞 Unerwünschte Anrufe</span>
+          <span class="modal-tag">💬 SMS</span>
+          <span class="modal-tag">📦 Lieferungen</span>
+          <span class="modal-tag">🚫 Spam</span>
+          <span class="modal-tag">🔍 Doxxing</span>
+          <span class="modal-tag">⚡ Ähnliche Handlungen</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-footer-txt">Made by CanooStudio</span>
+      <button class="btn-discord" onclick="window.open('https://discord.gg/tgpknkG8ym','_blank')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.054a19.95 19.95 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.201 13.201 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        Discord
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PASS TO PLAYER -->
+<div id="s-pass" class="screen">
+  <div class="logo logo-small">
+    <span class="logo-emoji">🕵️</span>
+    <div class="logo-title">Finde den Imposter</div>
+  </div>
+  <div class="cpbar">Jetzt dran: <strong id="pass-name"></strong></div>
+  <div class="hcover" onclick="showReveal()">
+    <div class="hc-q">🤫</div>
+    <div class="hc-name" id="pass-name2"></div>
+    <div class="hc-hint">Tippen zum Aufdecken</div>
+  </div>
+  <p class="passhint">📱 Alleine schauen — niemand zugucken!</p>
+</div>
+
+<!-- REVEAL (word or imposter) -->
+<div id="s-reveal" class="screen">
+  <div class="cpbar" id="rev-pbar"></div>
+  <div class="revcard" id="rev-card">
+    <span class="rev-emoji" id="rev-emoji"></span>
+    <span class="rev-role" id="rev-role"></span>
+    <div class="rev-word" id="rev-word"></div>
+    <div class="rev-sub" id="rev-sub"></div>
+  </div>
+  <button class="btnmain" id="rev-btn" onclick="revealNext()">✅ Gesehen!</button>
+</div>
+
+<!-- DISCUSS -->
+<div id="s-discuss" class="screen">
+  <div class="logo logo-small">
+    <span class="logo-emoji">🗣️</span>
+    <div class="logo-title">Diskutiert!</div>
+  </div>
+  <div class="discuss-box">
+    <span class="disc-emoji">💬</span>
+    <div id="disc-cat" style="display:inline-block;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:10px;background:rgba(255,224,65,.12);color:#ffe97a;border:1px solid rgba(255,224,65,.25);"></div>
+    <div class="disc-title">Redet über das Wort</div>
+    <div class="disc-sub" id="disc-sub-text">Jeder beschreibt es mit einem Satz — ohne es direkt zu sagen!<br>Der <span style="color:var(--p);font-weight:900;">Imposter</span> versucht mitzumachen ohne aufzufliegen 😈</div>
+    <div class="timer" id="timer">60</div>
+    <div style="font-size:12px;color:var(--t3);font-weight:700;">Sekunden</div>
+  </div>
+  <button class="btnmain" onclick="goVote()">🗳️ Jetzt abstimmen!</button>
+</div>
+
+<!-- VOTE -->
+<div id="s-vote" class="screen">
+  <div class="logo logo-small">
+    <span class="logo-emoji">🗳️</span>
+    <div class="logo-title">Wer ist der Imposter?</div>
+  </div>
+  <div class="cbox" style="margin-bottom:1rem;">
+    <div class="slabel">👇 Alle gleichzeitig zeigen auf...</div>
+    <div class="vote-grid" id="vote-grid"></div>
+  </div>
+  <p style="font-size:13px;color:var(--t3);text-align:center;font-weight:700;margin-bottom:1rem;">Tipp auf den Namen wer die meisten Stimmen bekommen hat!</p>
+</div>
+
+<!-- RESULT -->
+<div id="s-result" class="screen">
+  <div class="logo logo-small">
+    <span class="logo-emoji" id="res-logo-emoji">🎉</span>
+    <div class="logo-title">Ergebnis</div>
+  </div>
+  <div class="result-banner" id="result-banner">
+    <span class="res-emoji" id="res-emoji"></span>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="reveal-row">
+      <span>Der Imposter war:</span>
+      <strong id="res-impname"></strong>
+      <span>• Das Wort war:</span>
+      <strong id="res-word" style="color:var(--y)"></strong>
+    </div>
+  </div>
+  <button class="btnmain" onclick="nextRound()">🔄 Nächste Runde!</button>
+  <button class="btnsec" onclick="goHome()">🏠 Hauptmenü</button>
+  <div class="footer-bar" style="margin-top:2rem;">
+    <span class="footer-txt">Made by CanooStudio ✦</span>
+    <div class="footer-btns">
+      <button class="btn-imp" onclick="openImpressum()">Impressum</button>
+      <button class="btn-discord" onclick="window.open('https://discord.gg/tgpknkG8ym','_blank')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.054a19.95 19.95 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.201 13.201 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        Discord
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const WORDS = [
+  // Essen & Trinken
+  {w:"🍕 Pizza",cat:"Essen"},{w:"🍔 Burger",cat:"Essen"},{w:"🍦 Eis",cat:"Essen"},
+  {w:"🍣 Sushi",cat:"Essen"},{w:"🌮 Tacos",cat:"Essen"},{w:"🍩 Donut",cat:"Essen"},
+  {w:"🧃 Capri-Sonne",cat:"Trinken"},{w:"☕ Kaffee",cat:"Trinken"},{w:"🧋 Bubble Tea",cat:"Trinken"},
+  // Tiere
+  {w:"🦁 Löwe",cat:"Tiere"},{w:"🐧 Pinguin",cat:"Tiere"},{w:"🦊 Fuchs",cat:"Tiere"},
+  {w:"🐙 Oktopus",cat:"Tiere"},{w:"🦄 Einhorn",cat:"Tiere"},{w:"🐊 Krokodil",cat:"Tiere"},
+  {w:"🦒 Giraffe",cat:"Tiere"},{w:"🦈 Hai",cat:"Tiere"},{w:"🦜 Papagei",cat:"Tiere"},
+  // Alltag
+  {w:"📱 Smartphone",cat:"Alltag"},{w:"🛋️ Sofa",cat:"Alltag"},{w:"🚿 Dusche",cat:"Alltag"},
+  {w:"🪥 Zahnbürste",cat:"Alltag"},{w:"🧴 Shampoo",cat:"Alltag"},{w:"🛏️ Bett",cat:"Alltag"},
+  // Sport
+  {w:"⚽ Fußball",cat:"Sport"},{w:"🎾 Tennis",cat:"Sport"},{w:"🏊 Schwimmen",cat:"Sport"},
+  {w:"🛹 Skateboard",cat:"Sport"},{w:"🥊 Boxen",cat:"Sport"},{w:"🎿 Skifahren",cat:"Sport"},
+  // Unterhaltung
+  {w:"🎮 Gaming",cat:"Spaß"},{w:"🎬 Netflix",cat:"Spaß"},{w:"🎡 Kirmes",cat:"Spaß"},
+  {w:"🎤 Karaoke",cat:"Spaß"},{w:"🎳 Bowling",cat:"Spaß"},{w:"🎢 Achterbahn",cat:"Spaß"},
+  // Natur
+  {w:"🌋 Vulkan",cat:"Natur"},{w:"🌈 Regenbogen",cat:"Natur"},{w:"🌊 Welle",cat:"Natur"},
+  {w:"❄️ Schneeflocke",cat:"Natur"},{w:"🌵 Kaktus",cat:"Natur"},{w:"🍄 Pilz",cat:"Natur"},
+  // Orte
+  {w:"🏖️ Strand",cat:"Orte"},{w:"🏔️ Berg",cat:"Orte"},{w:"🗼 Eiffelturm",cat:"Orte"},
+  {w:"🎠 Spielplatz",cat:"Orte"},{w:"🏟️ Stadion",cat:"Orte"},{w:"🛒 Supermarkt",cat:"Orte"},
+  // Lustige Wildcards
+  {w:"💩 Klopapier",cat:"WTF"},{w:"🤡 Clown",cat:"WTF"},{w:"👙 Bikini",cat:"WTF"},
+  {w:"🕺 Tanzen",cat:"WTF"},{w:"🧟 Zombie",cat:"WTF"},{w:"👻 Geist",cat:"WTF"},
+  // Rapper & Jugend
+  {w:"🎤 Nicki Minaj",cat:"Rapper"},{w:"🎤 Drake",cat:"Rapper"},{w:"🎤 Capital Bra",cat:"Rapper"},
+  {w:"🎤 Bonez MC",cat:"Rapper"},{w:"🎤 Ufo361",cat:"Rapper"},{w:"🎤 Luciano",cat:"Rapper"},
+  {w:"🎤 Ngee",cat:"Rapper"},{w:"🎤 Zentro",cat:"Rapper"},{w:"🎤 Ski Aggu",cat:"Rapper"},
+  {w:"🎤 Yung Hurn",cat:"Rapper"},{w:"🎤 Fler",cat:"Rapper"},{w:"🎤 KC Rebell",cat:"Rapper"},
+  {w:"🎤 Summer Cem",cat:"Rapper"},{w:"🎤 Haftbefehl",cat:"Rapper"},{w:"🎤 Celo & Abdi",cat:"Rapper"},
+  {w:"🎤 Nina Chuba",cat:"Rapper"},{w:"🎤 Rin",cat:"Rapper"},{w:"🎤 Pashanim",cat:"Rapper"},
+  {w:"🎤 Badmómzjay",cat:"Rapper"},{w:"🎤 Nura",cat:"Rapper"},{w:"🎤 Juju",cat:"Rapper"},
+  {w:"🎤 Trettmann",cat:"Rapper"},{w:"🎤 Cro",cat:"Rapper"},{w:"🎤 Marteria",cat:"Rapper"},
+  {w:"🎤 Trailerpark",cat:"Rapper"},{w:"🎤 Gzuz",cat:"Rapper"},{w:"🎤 LX",cat:"Rapper"},
+  {w:"🎤 Travis Scott",cat:"Rapper"},{w:"🎤 Kanye West",cat:"Rapper"},{w:"🎤 21 Savage",cat:"Rapper"},
+  {w:"🎤 Lil Baby",cat:"Rapper"},{w:"🎤 Playboi Carti",cat:"Rapper"},{w:"🎤 Gunna",cat:"Rapper"},
+  // Jugend Slang Begriffe
+  {w:"🔥 Rizz",cat:"Slang"},{w:"💀 No Cap",cat:"Slang"},{w:"😤 Slay",cat:"Slang"},
+  {w:"🫡 Sigma",cat:"Slang"},{w:"💅 Vibe",cat:"Slang"},{w:"🥶 Drip",cat:"Slang"},
+  {w:"😂 Ratio",cat:"Slang"},{w:"🤙 W-Rizz",cat:"Slang"},{w:"👀 Sus",cat:"Slang"},
+  {w:"🫶 Bussin",cat:"Slang"},{w:"😭 Lowkey",cat:"Slang"},{w:"🚀 Sheesh",cat:"Slang"},
+];
+
+let players=[], imposterIdx=-1, currentPassIdx=0, chosenWord=null, timerInterval=null;
+
+function initPlayers(){players=["","",""];renderPlayers();}
+
+function renderPlayers(){
+  const list=document.getElementById('player-list');
+  list.innerHTML='';
+  players.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='prow';
+    row.innerHTML=
+      '<div class="pnum n'+(i%8)+'">'+(i+1)+'</div>'+
+      '<input class="pinput" type="text" placeholder="Spieler '+(i+1)+'" value="'+p+'" oninput="players['+i+']=this.value"/>'+
+      (players.length>3?'<button class="btnrm" onclick="removePlayer('+i+')">✕</button>':'');
+    list.appendChild(row);
+  });
+}
+
+function addPlayer(){players.push('');renderPlayers();}
+function removePlayer(i){players.splice(i,1);renderPlayers();}
+
+function startRound(){
+  const filled=players.filter(p=>p.trim()!=='');
+  if(filled.length<3){document.getElementById('minplay-overlay').classList.add('open');return;}
+  players=players.filter(p=>p.trim()!=='').map((p,i)=>p.trim()||('Spieler '+(i+1)));
+  // pick random word
+  chosenWord=WORDS[Math.floor(Math.random()*WORDS.length)];
+  // pick random imposter
+  imposterIdx=Math.floor(Math.random()*players.length);
+  currentPassIdx=0;
+  showPass();
+}
+
+function showPass(){
+  if(currentPassIdx>=players.length){
+    showDiscuss();
+    return;
+  }
+  const name=players[currentPassIdx];
+  document.getElementById('pass-name').textContent=name;
+  document.getElementById('pass-name2').textContent=name;
+  show('s-pass');
+}
+
+function showReveal(){
+  const isImp=currentPassIdx===imposterIdx;
+  const name=players[currentPassIdx];
+  const card=document.getElementById('rev-card');
+  card.className='revcard '+(isImp?'revcard-imp':'revcard-crew');
+
+  document.getElementById('rev-pbar').innerHTML='<strong style="color:var(--y)">'+name+'</strong>';
+  document.getElementById('rev-emoji').textContent=isImp?'😈':'🔵';
+  document.getElementById('rev-role').textContent=isImp?'DU BIST DER IMPOSTER!':'Du bist Crewmitglied';
+  document.getElementById('rev-role').className='rev-role '+(isImp?'role-imp':'role-crew');
+  document.getElementById('rev-word').textContent=isImp?'???':chosenWord.w;
+
+  if(isImp){
+    document.getElementById('rev-sub').textContent='Du kennst das Wort NICHT! 😱 Rede mit — ohne aufzufliegen. Viel Glück du kleiner Betrüger 😈';
+  } else {
+    document.getElementById('rev-sub').textContent='Merke dir das Wort gut! Beschreib es ohne es direkt zu sagen. Finde den Imposter! 🕵️';
+  }
+
+  const btn=document.getElementById('rev-btn');
+  const isLast=currentPassIdx>=players.length-1;
+  btn.textContent=isLast?'🗣️ Alle haben geschaut!':'✅ Weiter →';
+
+  show('s-reveal');
+}
+
+function revealNext(){
+  currentPassIdx++;
+  if(currentPassIdx>=players.length){
+    showDiscuss();
+  } else {
+    showPass();
+  }
+}
+
+let timeLeft=60;
+function showDiscuss(){
+  timeLeft=60;
+  document.getElementById('timer').textContent='60';
+  clearInterval(timerInterval);
+  // Show category hint
+  const catEl=document.getElementById('disc-cat');
+  const catEmojis={Essen:'🍕',Trinken:'🧃',Tiere:'🐾',Alltag:'🏠',Sport:'⚽',Spaß:'🎮',Natur:'🌿',Orte:'📍',WTF:'💀',Rapper:'🎤',Slang:'🔥'};
+  catEl.textContent=(catEmojis[chosenWord.cat]||'❓')+' Kategorie: '+chosenWord.cat;
+  // Special instructions based on category
+  const subEl=document.getElementById('disc-sub-text');
+  if(chosenWord.cat==='Rapper'){
+    subEl.innerHTML='Beschreibe den Rapper — Songs, Style, Vibe — ohne den Namen zu sagen! 🎤<br>Der <span style="color:var(--p);font-weight:900;">Imposter</span> kennt den Namen NICHT 😈';
+  } else if(chosenWord.cat==='Slang'){
+    subEl.innerHTML='Erkläre den Slang-Begriff — ohne ihn direkt zu sagen! No cap fr fr 🔥<br>Der <span style="color:var(--p);font-weight:900;">Imposter</span> kennt den Begriff NICHT 😈';
+  } else {
+    subEl.innerHTML='Jeder beschreibt es mit einem Satz — ohne es direkt zu sagen!<br>Der <span style="color:var(--p);font-weight:900;">Imposter</span> versucht mitzumachen ohne aufzufliegen 😈';
+  }
+  show('s-discuss');
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    const el=document.getElementById('timer');
+    el.textContent=timeLeft;
+    if(timeLeft<=10){el.style.color='var(--r)';}
+    else{el.style.color='var(--y)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      el.textContent='⏰';
+      el.style.color='var(--r)';
+    }
+  },1000);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timeLeft=60;
+  document.getElementById('timer').textContent='60';
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timer').textContent=timeLeft;
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      document.getElementById('timer').textContent='⏰';
+    }
+  },1000);
+}
+
+function goVote(){
+  clearInterval(timerInterval);
+  const grid=document.getElementById('vote-grid');
+  grid.innerHTML='';
+  players.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='vbtn';
+    const emojis=['🔴','🔵','🟢','🟡','🟣','🟠','⚪','🩷'];
+    btn.innerHTML='<span class="vbtn-emoji">'+emojis[i%emojis.length]+'</span>'+p;
+    btn.onclick=()=>showResult(i);
+    grid.appendChild(btn);
+  });
+  show('s-vote');
+}
+
+function showResult(votedIdx){
+  const correct=votedIdx===imposterIdx;
+  const banner=document.getElementById('result-banner');
+  banner.className='result-banner '+(correct?'res-win':'res-lose');
+
+  document.getElementById('res-logo-emoji').textContent=correct?'🎉':'😈';
+  document.getElementById('res-emoji').textContent=correct?'🥳':'💀';
+  document.getElementById('res-title').textContent=correct?'ERWISCHT!':'IMPOSTER ENTKOMMEN!';
+  document.getElementById('res-title').className='res-title '+(correct?'res-title-win':'res-title-lose');
+
+  if(correct){
+    const funnies=[
+      'Der Imposter hat sich wie ein Amateur versteckt 🤡',
+      'Zu einfach! Fast schon peinlich für den Imposter 😂',
+      'Detektiv-Level: FBI 🕵️ Der arme Imposter...',
+      'Caught in 4K! 📸 Keine Chance hattest du!',
+    ];
+    document.getElementById('res-sub').textContent=funnies[Math.floor(Math.random()*funnies.length)];
+  } else {
+    const funnies=[
+      'Der Imposter chillt gerade und lacht über euch 😈',
+      '"+1 IQ" sagt der Imposter und geht 🚶 Ihr seid raus!',
+      'LOL ihr habt die falsche Person erwischt 💀 Imposter gewinnt!',
+      'Der Imposter hat euch alle verarscht wie Profis 🎭',
+    ];
+    document.getElementById('res-sub').textContent=funnies[Math.floor(Math.random()*funnies.length)];
+  }
+
+  document.getElementById('res-impname').textContent=players[imposterIdx];
+  document.getElementById('res-word').textContent=chosenWord.w;
+  show('s-result');
+}
+
+function nextRound(){
+  chosenWord=WORDS[Math.floor(Math.random()*WORDS.length)];
+  imposterIdx=Math.floor(Math.random()*players.length);
+  currentPassIdx=0;
+  showPass();
+}
+
+function goHome(){
+  initPlayers();
+  show('s-setup');
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openImpressum(){document.getElementById('impressum-overlay').classList.add('open');}
+function closeImpressum(e){if(!e||e.target===document.getElementById('impressum-overlay')){document.getElementById('impressum-overlay').classList.remove('open');}}
+
+initPlayers();
+</script>
+</body>
+</html>
