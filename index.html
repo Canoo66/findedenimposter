@@ -8,20 +8,24 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --y:#FFE041;--o:#FF7B2C;--r:#FF3B5C;--g:#2EE87B;--b:#3BAAFF;--p:#C44DFF;
-  --bg:#12091e;--bg2:#1c1030;--bg3:#251840;--card:#1e1230;
-  --t:#ffffff;--t2:#bba8d4;--t3:#6a5585;--brd:rgba(255,255,255,0.07);
+  --y:#bf80ff;--o:#9d40ff;--r:#FF3B5C;--g:#2EE87B;--b:#a855f7;--p:#C44DFF;
+  --bg:#060008;--bg2:#0e0018;--bg3:#160024;--card:#110018;
+  --t:#ffffff;--t2:#c9a8e8;--t3:#7a5590;--brd:rgba(180,80,255,0.12);
 }
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;justify-content:center;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 10%,rgba(255,224,65,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(196,77,255,.07) 0%,transparent 50%);pointer-events:none;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(150,0,255,.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 90%,rgba(120,0,220,.1) 0%,transparent 50%),radial-gradient(ellipse at 20% 60%,rgba(180,0,255,.07) 0%,transparent 40%);pointer-events:none;}
 #app{width:100%;max-width:480px;min-height:100dvh;padding:1.5rem 1.25rem 3rem;position:relative;z-index:1;}
 .screen{display:none;}.screen.active{display:block;}
 
 /* LOGO */
 .logo{text-align:center;margin-bottom:1.8rem;padding-top:.5rem;}
 .logo-emoji{font-size:44px;display:block;margin-bottom:6px;animation:wobble 2.5s ease-in-out infinite;}
+@keyframes logoPulse{
+  0%,100%{filter:drop-shadow(0 0 25px rgba(180,0,255,.8)) drop-shadow(0 0 50px rgba(120,0,200,.4));}
+  50%{filter:drop-shadow(0 0 35px rgba(200,0,255,1)) drop-shadow(0 0 70px rgba(150,0,255,.6));}
+}
 @keyframes wobble{0%,100%{transform:rotate(-6deg) scale(1);}50%{transform:rotate(6deg) scale(1.1);}}
-.logo-title{font-family:'Fredoka One',cursive;font-size:42px;line-height:1;background:linear-gradient(135deg,var(--y) 0%,var(--o) 50%,var(--r) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(255,123,44,.4));letter-spacing:1px;}
+.logo-title{font-family:'Fredoka One',cursive;font-size:42px;line-height:1;background:linear-gradient(135deg,#e0a0ff 0%,#bf80ff 40%,#9d40ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(180,0,255,.6));letter-spacing:1px;}
 .logo-small .logo-title{font-size:28px;}
 .logo-small .logo-emoji{font-size:28px;margin-bottom:2px;}
 .logo-sub{font-size:11px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-top:4px;font-weight:800;}
@@ -51,7 +55,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .btnadd:hover{border-color:var(--y);color:var(--y);}
 
 /* BUTTONS */
-.btnmain{width:100%;padding:17px;background:linear-gradient(135deg,var(--y),var(--o));color:#12091e;border:none;border-radius:18px;font-size:18px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:1rem;transition:transform .15s,filter .15s;box-shadow:0 4px 24px rgba(255,123,44,.35);letter-spacing:.3px;}
+.btnmain{width:100%;padding:17px;background:linear-gradient(135deg,#bf80ff,#7b00ff);color:#ffffff;border:none;border-radius:18px;font-size:18px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:1rem;transition:transform .15s,filter .15s;box-shadow:0 4px 24px rgba(150,0,255,.4);letter-spacing:.3px;}
 .btnmain:hover{filter:brightness(1.1);transform:translateY(-2px);}
 .btnmain:active{transform:scale(.97);}
 .btnsec{width:100%;padding:14px;background:rgba(255,255,255,.04);color:var(--t2);border:1.5px solid var(--brd);border-radius:18px;font-size:15px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;margin-top:10px;transition:all .15s;}
@@ -60,7 +64,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* HIDDEN PASS */
 .cpbar{text-align:center;font-size:15px;color:var(--t2);margin-bottom:1.2rem;font-weight:700;}
 .cpbar strong{color:var(--y);}
-.hcover{background:linear-gradient(145deg,#0a061a,#130b22);border:2px dashed rgba(196,77,255,.35);border-radius:24px;padding:2.5rem 1.75rem;margin-bottom:1.25rem;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;user-select:none;}
+.hcover{background:linear-gradient(145deg,#060008,#0e0018);border:2px dashed rgba(180,0,255,.5);border-radius:24px;padding:2.5rem 1.75rem;margin-bottom:1.25rem;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all .2s;user-select:none;}
 .hcover:active{transform:scale(.98);}
 .hc-q{font-size:60px;margin-bottom:12px;animation:pulse 2s ease-in-out infinite;}
 @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
@@ -71,12 +75,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* REVEAL CARD */
 .revcard{border-radius:26px;padding:2.5rem 1.75rem;margin-bottom:1.25rem;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;animation:cardPop .45s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes cardPop{from{transform:scale(.8) rotate(-3deg);opacity:0;}60%{transform:scale(1.04) rotate(.5deg);}to{transform:scale(1) rotate(0);opacity:1;}}
-.revcard-crew{background:linear-gradient(145deg,#0f1f3a,#152848);border:2px solid rgba(59,170,255,.5);box-shadow:0 0 40px rgba(59,170,255,.18);}
+.revcard-crew{background:linear-gradient(145deg,#0f0820,#1a0d35);border:2px solid rgba(180,80,255,.5);box-shadow:0 0 40px rgba(180,80,255,.18);}
 .revcard-imp{background:linear-gradient(145deg,#0a0008,#180020);border:2px solid rgba(196,77,255,.7);box-shadow:0 0 50px rgba(196,77,255,.3);}
 .rev-emoji{font-size:56px;margin-bottom:12px;display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
 @keyframes popIn{from{transform:scale(0) rotate(-20deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
 .rev-role{font-size:11px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:1rem;display:inline-block;}
-.role-crew{background:rgba(59,170,255,.18);color:#90cdff;border:1px solid rgba(59,170,255,.35);}
+.role-crew{background:rgba(180,80,255,.18);color:#d4a0ff;border:1px solid rgba(180,80,255,.35);}
 .role-imp{background:rgba(196,77,255,.2);color:#da9fff;border:1px solid rgba(196,77,255,.45);}
 .rev-word{font-family:'Fredoka One',cursive;font-size:38px;color:var(--t);line-height:1.2;margin-bottom:10px;}
 .rev-sub{font-size:14px;color:var(--t2);line-height:1.6;font-weight:600;}
@@ -101,7 +105,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .res-lose{background:linear-gradient(145deg,#1a0520,#220a2a);border:2px solid rgba(196,77,255,.6);box-shadow:0 0 40px rgba(196,77,255,.2);}
 .res-emoji{font-size:56px;margin-bottom:10px;display:block;}
 .res-title{font-family:'Fredoka One',cursive;font-size:34px;margin-bottom:6px;}
-.res-title-win{color:var(--g);}
+.res-title-win{color:#bf80ff;}
 .res-title-lose{color:var(--p);}
 .res-sub{font-size:14px;color:var(--t2);line-height:1.6;font-weight:600;}
 .reveal-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 14px;}
@@ -110,7 +114,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* PROGRESS */
 .progbar{height:6px;background:var(--bg3);border-radius:4px;margin-bottom:1.4rem;overflow:hidden;}
-.progfill{height:100%;background:linear-gradient(90deg,var(--y),var(--o));border-radius:4px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.progfill{height:100%;background:linear-gradient(90deg,#bf80ff,#7b00ff);border-radius:4px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
 .pdots{display:flex;justify-content:center;gap:6px;margin-bottom:1.2rem;flex-wrap:wrap;}
 .pdot{height:8px;background:var(--bg3);border-radius:4px;transition:all .35s cubic-bezier(.34,1.56,.64,1);min-width:8px;}
 .pdot.active{background:var(--y);}
@@ -173,10 +177,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <!-- SETUP -->
 <div id="s-setup" class="screen active">
-  <div class="logo">
-    <span class="logo-emoji">🕵️</span>
-    <div class="logo-title">Finde den Imposter</div>
-    <div class="logo-sub">das verrückte partyspiel</div>
+  <div class="logo" style="margin-bottom:.5rem;padding-top:0;">
+    <div style="position:relative;display:inline-block;margin-bottom:-8px;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(150,0,255,.35) 0%,transparent 70%);border-radius:50%;transform:scale(1.2);"></div>
+      <img src="https://cdn.discordapp.com/attachments/882032788122001438/1512931329287651388/ChatGPT_Image_6._Juni_2026__23_25_58-removebg-preview.png?ex=6a25e299&is=6a249119&hm=95d1dca8346720374a8bb85b69c5b90103d965ee4def93b65b3e808f85e1a6ff&" alt="Finde den Imposter" style="width:240px;height:240px;object-fit:contain;position:relative;filter:drop-shadow(0 0 25px rgba(180,0,255,.8)) drop-shadow(0 0 50px rgba(120,0,200,.4));animation:logoPulse 3s ease-in-out infinite;" />
+    </div>
+    <div class="logo-sub" style="margin-top:4px;">das verrückte partyspiel</div>
   </div>
   <div class="cbox">
     <div class="slabel">👥 Wer spielt?</div>
@@ -262,8 +268,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- PASS TO PLAYER -->
 <div id="s-pass" class="screen">
   <div class="logo logo-small">
-    <span class="logo-emoji">🕵️</span>
-    <div class="logo-title">Finde den Imposter</div>
+    <img src="https://cdn.discordapp.com/attachments/882032788122001438/1512931329287651388/ChatGPT_Image_6._Juni_2026__23_25_58-removebg-preview.png?ex=6a25e299&is=6a249119&hm=95d1dca8346720374a8bb85b69c5b90103d965ee4def93b65b3e808f85e1a6ff&" alt="Logo" style="width:75px;height:75px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(180,0,255,.7));" />
   </div>
   <div class="cpbar">Jetzt dran: <strong id="pass-name"></strong></div>
   <div class="hcover" onclick="showReveal()">
@@ -289,8 +294,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- DISCUSS -->
 <div id="s-discuss" class="screen">
   <div class="logo logo-small">
-    <span class="logo-emoji">🗣️</span>
-    <div class="logo-title">Diskutiert!</div>
+    <span style="font-size:36px;">🗣️</span>
+    <div class="logo-title" style="font-family:'Fredoka One',cursive;font-size:28px;background:linear-gradient(135deg,#e0a0ff,#9d40ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Diskutiert!</div>
   </div>
   <div class="discuss-box">
     <span class="disc-emoji">💬</span>
@@ -306,8 +311,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- VOTE -->
 <div id="s-vote" class="screen">
   <div class="logo logo-small">
-    <span class="logo-emoji">🗳️</span>
-    <div class="logo-title">Wer ist der Imposter?</div>
+    <span style="font-size:36px;">🗳️</span>
+    <div class="logo-title" style="font-family:'Fredoka One',cursive;font-size:28px;background:linear-gradient(135deg,#e0a0ff,#9d40ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Wer ist der Imposter?</div>
   </div>
   <div class="cbox" style="margin-bottom:1rem;">
     <div class="slabel">👇 Alle gleichzeitig zeigen auf...</div>
@@ -319,8 +324,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- RESULT -->
 <div id="s-result" class="screen">
   <div class="logo logo-small">
-    <span class="logo-emoji" id="res-logo-emoji">🎉</span>
-    <div class="logo-title">Ergebnis</div>
+    <span style="font-size:36px;" id="res-logo-emoji">🎉</span>
+    <div class="logo-title" style="font-family:'Fredoka One',cursive;font-size:28px;background:linear-gradient(135deg,#e0a0ff,#9d40ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ergebnis</div>
   </div>
   <div class="result-banner" id="result-banner">
     <span class="res-emoji" id="res-emoji"></span>
@@ -496,8 +501,8 @@ function showDiscuss(){
     timeLeft--;
     const el=document.getElementById('timer');
     el.textContent=timeLeft;
-    if(timeLeft<=10){el.style.color='var(--r)';}
-    else{el.style.color='var(--y)';}
+    if(timeLeft<=10){el.style.color='#FF3B5C';}
+    else{el.style.color='#bf80ff';}
     if(timeLeft<=0){
       clearInterval(timerInterval);
       el.textContent='⏰';
