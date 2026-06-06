@@ -610,18 +610,12 @@ initPlayers();
     }
   });
 
-  // DevTools Erkennung via Größe
-  var devOpen=false;
-  setInterval(function(){
-    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      if(!devOpen){devOpen=true;showLockout();}
-    } else {devOpen=false;}
-  },500);
-
-  // Debugger Trap
-  setInterval(function(){
-    (function(){debugger;})();
-  },100);
+  // Debugger Trap (nur Desktop)
+  if(!/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)){
+    setInterval(function(){
+      (function(){debugger;})();
+    },100);
+  }
 
   function showLockout(){
     if(document.getElementById('lockout-screen')) return;
