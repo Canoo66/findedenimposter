@@ -591,5 +591,46 @@ function closeImpressum(e){if(!e||e.target===document.getElementById('impressum-
 
 initPlayers();
 </script>
+<script>
+(function(){
+  // Rechtsklick deaktivieren
+  document.addEventListener('contextmenu',function(e){e.preventDefault();});
+
+  // Tastenkombinationen blockieren
+  document.addEventListener('keydown',function(e){
+    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')||(e.ctrlKey&&e.key==='S')||(e.ctrlKey&&e.key==='A')){
+      e.preventDefault();
+      showLockout();
+      return false;
+    }
+  });
+
+  // DevTools Erkennung via Größe
+  var devOpen=false;
+  setInterval(function(){
+    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+      if(!devOpen){devOpen=true;showLockout();}
+    } else {devOpen=false;}
+  },500);
+
+  // Debugger Trap
+  setInterval(function(){
+    (function(){debugger;})();
+  },100);
+
+  function showLockout(){
+    if(document.getElementById('lockout-screen')) return;
+    var el=document.createElement('div');
+    el.id='lockout-screen';
+    el.style.cssText='position:fixed;inset:0;background:#0a0010;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:Fredoka One,cursive;';
+    el.innerHTML='<div style="font-size:64px;margin-bottom:16px;">🚫</div><div style="font-size:36px;color:#FF3B5C;margin-bottom:10px;letter-spacing:2px;">ZUGRIFF VERWEIGERT</div><div style="font-size:16px;color:#bba8d4;font-family:Nunito,sans-serif;font-weight:700;">Entwicklertools sind nicht erlaubt!</div><div style="font-size:13px;color:#6a5585;margin-top:8px;font-family:Nunito,sans-serif;">Made by CanooStudio ✦</div>';
+    document.body.appendChild(el);
+  }
+
+  // Drag & Drop & Auswahl deaktivieren
+  document.addEventListener('dragstart',function(e){e.preventDefault();});
+  document.addEventListener('selectstart',function(e){e.preventDefault();});
+})();
+</script>
 </body>
 </html>
